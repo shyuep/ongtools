@@ -7,13 +7,16 @@ if [ "$#" -eq 0 ]; then
     exit 1
 fi
 
-name="$(date +%F)"
+name="Merged"
 for filename in "$@"
 do 
     echo "file '$filename'" >> vids.txt
-    name="$name_${filename%.*}"
+    name="${name}_${filename%.*}"
 done
+
+echo "$name"
 
 ffmpeg -f concat -safe 0 -i vids.txt -c copy output.mp4
 HandBrakeCLI -Z "Very Fast 1080p30" -i output.mp4 -o "$name.mp4"
 rm vids.txt output.mp4
+echo "Merged file: $name.mp4"
