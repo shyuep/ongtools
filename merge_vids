@@ -8,15 +8,14 @@ if [ "$#" -eq 0 ]; then
 fi
 
 name="Merged"
+TMPTXT=`mktemp -p .`
 for filename in "$@"
 do 
-    echo "file '$filename'" >> vids.txt
+    echo "file '$filename'" >> $TMPTXT
     name="${name}_${filename%.*}"
 done
 
-echo "$name"
-
-ffmpeg -f concat -safe 0 -i vids.txt -c copy output.mp4
-HandBrakeCLI -Z "Very Fast 1080p30" -i output.mp4 -o "$name.mp4"
-rm vids.txt output.mp4
+ffmpeg -f concat -safe 0 -i $TMPTXT -c copy "${name}_tmp.mp4"
+HandBrakeCLI -Z "Very Fast 1080p30" -i "${name}_tmp.mp4" -o "$name.mp4"
+rm $TMPTXT "${name}_tmp.mp4"
 echo "Merged file: $name.mp4"
