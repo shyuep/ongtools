@@ -1,0 +1,19 @@
+#!/bin/bash
+# Use ffmpeg to merge multiple videos without reencoding followed by reencoding with HandBrakeCLI.
+# This script requires ffmpeg and HandBrakeCLI to be installed (via homebrew) and in the path.
+
+if [ "$#" -eq 0 ]; then
+    echo "Usage: merge_vids filename1 filename2 .... (wildcards are ok)"
+    exit 1
+fi
+
+name="$(date +%F)"
+for filename in "$@"
+do 
+    echo "file '$filename'" >> vids.txt
+    name="$name_${filename%.*}"
+done
+
+ffmpeg -f concat -safe 0 -i vids.txt -c copy output.mp4
+HandBrakeCLI -Z "Very Fast 1080p30" -i output.mp4 -o "$name.mp4"
+rm vids.txt output.mp4
