@@ -11,5 +11,4 @@ for filename in "$@"
 do
     echo "Processing $filename"
     HandBrakeCLI -Z "Very Fast 1080p30" -i "$filename" -o "$(date +%F) ${filename%.*}_compressed.mp4"
-    mv "$filename" originals
 done
