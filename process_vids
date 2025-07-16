@@ -1,0 +1,84 @@
+#!/usr/bin/env python3
+# Use HandBrakeCLI to encode multiple video files.
+
+import os
+import argparse
+import subprocess
+
+
+def merge(fnames):
+    basefnames = []
+    tmptxt = "to_merge.txt"
+    with open(tmptxt, "wt") as f:
+        for fname in fnames:
+            f.write(f"file '{fname}'\n")
+            basefnames.append(fname.rsplit(".")[0])
+
+    outfname = "_".join(basefnames) + "_merged.mp4"
+
+    subprocess.call(["ffmpeg", "-f", "concat", "-safe", "0", "-i", tmptxt, "-c", "copy", outfname])
+    os.remove(tmptxt)
+    return [outfname]
+
+
+
+def compress(fnames, compress):
+    preset = "Creator 2160p60 4K"
+
+    if compress == "av1":
+        preset = "Fast 2160p60 4K AV1"
+    elif compress == "movie":
+        preset = "Apple 2160p60 4K HEVC Surround"
+
+    for fname in fnames:
+        print(f"Processing {fname} using preset {preset}...")
+        outfname = fname.rsplit(".")[0] + f"_{compress}.mp4"
+        subprocess.call(["HandBrakeCLI", "-Z", preset, "-i", fname, "-o", outfname])
+
+
+
+def main():
+    """Handle main."""
+    parser = argparse.ArgumentParser(
+        description="Run FFPMPEG and HandbrakeCLI to merge and/or compress videos.",
+    )
+
+    parser.add_argument(
+        "files",
+        metavar="files",
+        type=str,
+        nargs="+",
+        help="Files to compress.",
+    )
+
+    parser.add_argument(
+        "-m",
+        "--merge",
+        dest="merge",
+        action="store_true",
+        help="Merge files before compression.",
+    )
+
+    parser.add_argument(
+        "-c",
+        "--compress",
+        dest="compress",
+        type=str,
+        choices=["none", "youtube", "av1", "movie"],
+        default="none",
+        help="Preset to use. None implies no compression done.",
+    )
+
+    args = parser.parse_args()
+
+    fnames = args.files
+
+    if args.merge:
+        fnames = merge(fnames)
+
+    if args.compress != "none":
+        compress(fnames, args.compress)
+
+
+if __name__ == "__main__":
+    main()
