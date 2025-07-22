@@ -16,10 +16,11 @@ def merge(fnames):
 
     outfname = "_".join(basefnames) + "_merged.mp4"
 
-    subprocess.call(["ffmpeg", "-f", "concat", "-safe", "0", "-i", tmptxt, "-c", "copy", outfname])
+    subprocess.call(
+        ["ffmpeg", "-f", "concat", "-safe", "0", "-i", tmptxt, "-c", "copy", outfname]
+    )
     os.remove(tmptxt)
     return [outfname]
-
 
 
 def compress(fnames, compress):
@@ -36,7 +37,6 @@ def compress(fnames, compress):
         print(f"Processing {fname} using preset {preset}...")
         outfname = fname.rsplit(".")[0] + f"_{compress}.mp4"
         subprocess.call(["HandBrakeCLI", "-Z", preset, "-i", fname, "-o", outfname])
-
 
 
 def main():
