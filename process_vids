@@ -29,6 +29,8 @@ def compress(fnames, compress):
         preset = "Fast 2160p60 4K AV1"
     elif compress == "movie":
         preset = "Apple 2160p60 4K HEVC Surround"
+    elif compress == "1080":
+        preset = "Fast 1080p30"
 
     for fname in fnames:
         print(f"Processing {fname} using preset {preset}...")
@@ -64,7 +66,7 @@ def main():
         "--compress",
         dest="compress",
         type=str,
-        choices=["none", "youtube", "av1", "movie"],
+        choices=["none", "youtube", "av1", "movie", "1080"],
         default="none",
         help="Preset to use. None implies no compression done.",
     )
